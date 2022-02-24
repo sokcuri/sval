@@ -41,7 +41,6 @@ function getGetterOrSetter(method: 'get' | 'set', obj: any, key: string) {
       obj = getProto(obj)
     }
   }
-  }
 }
 export function getGetter(obj: any, key: string) {
   return getGetterOrSetter('get', obj, key)

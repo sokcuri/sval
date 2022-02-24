@@ -119,15 +119,20 @@
     var getOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
     function getGetterOrSetter(method, obj, key) {
         while (obj) {
-            var descriptor = getOwnPropertyDescriptor(obj, key);
-            var value = typeof descriptor !== 'undefined'
-                && typeof descriptor.writable === 'undefined'
-                && typeof descriptor[method] === 'function'
-                && descriptor[method];
-            if (value) {
-                return value;
+            try {
+                var descriptor = getOwnPropertyDescriptor(obj, key);
+                var value = typeof descriptor !== 'undefined'
+                    && typeof descriptor.writable === 'undefined'
+                    && typeof descriptor[method] === 'function'
+                    && descriptor[method];
+                if (value) {
+                    return value;
+                }
+                else {
+                    obj = getProto(obj);
+                }
             }
-            else {
+            catch (e) {
                 obj = getProto(obj);
             }
         }
