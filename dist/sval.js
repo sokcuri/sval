@@ -3424,7 +3424,7 @@
                     _b.sent();
                     _b.label = 5;
                 case 5:
-                    if (!(statement.type === 'ForStatement' && statement.init.type === 'VariableDeclaration')) return [3, 7];
+                    if (!(statement.type === 'ForStatement' && statement.init && statement.init.type === 'VariableDeclaration')) return [3, 7];
                     return [5, __values(VariableDeclaration$1(statement.init, scope, { hoist: true }))];
                 case 6:
                     _b.sent();
@@ -3785,7 +3785,7 @@
                     VariableDeclaration(statement.left, scope, { hoist: true });
                 }
             case 'ForStatement':
-                if (statement.type === 'ForStatement' && statement.init.type === 'VariableDeclaration') {
+                if (statement.type === 'ForStatement' && statement.init && statement.init.type === 'VariableDeclaration') {
                     VariableDeclaration(statement.init, scope, { hoist: true });
                 }
             case 'WhileStatement':

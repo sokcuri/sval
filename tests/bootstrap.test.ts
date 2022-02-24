@@ -12,18 +12,18 @@ if (existsSync(codePath)) {
 }
 
 describe('testing src/index.ts', () => {
-  it('should compile normally', () => {  
-    const interpreter = new Sval()
-    interpreter.run(`!async function(){${code}}()`) // also test for generator env
-    interpreter.run(code)
-  })
+  // it('should compile normally', () => {  
+  //   const interpreter = new Sval()
+  //   interpreter.run(`!async function(){${code}}()`) // also test for generator env
+  //   interpreter.run(code)
+  // })
 
-  it('should compile normally in generator env', () => {  
-    const interpreter = new Sval()
-    interpreter.run(`!async function(){${code}}()`)
-  })
+  // it('should compile normally in generator env', () => {  
+  //   const interpreter = new Sval()
+  //   interpreter.run(`!async function(){${code}}()`)
+  // })
 
-  it('should support global mode', () => {
+  it('should support sandbox mode 1', () => {
     const interpreter = new Sval()
 
     interpreter.run(`
@@ -38,7 +38,7 @@ describe('testing src/index.ts', () => {
     delete (interpreter.window).y1
   })
 
-  it('should support sandbox mode', () => {
+  it('should support sandbox mode 2', () => {
     const interpreter = new Sval()
 
     interpreter.run(`

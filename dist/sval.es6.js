@@ -2624,7 +2624,7 @@
                   yield* VariableDeclaration$1(statement.left, scope, { hoist: true });
               }
           case 'ForStatement':
-              if (statement.type === 'ForStatement' && statement.init.type === 'VariableDeclaration') {
+              if (statement.type === 'ForStatement' && statement.init && statement.init.type === 'VariableDeclaration') {
                   yield* VariableDeclaration$1(statement.init, scope, { hoist: true });
               }
           case 'WhileStatement':
@@ -2867,7 +2867,7 @@
                   VariableDeclaration(statement.left, scope, { hoist: true });
               }
           case 'ForStatement':
-              if (statement.type === 'ForStatement' && statement.init.type === 'VariableDeclaration') {
+              if (statement.type === 'ForStatement' && statement.init && statement.init.type === 'VariableDeclaration') {
                   VariableDeclaration(statement.init, scope, { hoist: true });
               }
           case 'WhileStatement':

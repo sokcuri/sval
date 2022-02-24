@@ -62,7 +62,7 @@ function* hoistVarRecursion(statement: estree.Statement, scope: Scope): Iterable
         yield* VariableDeclaration(statement.left, scope, { hoist: true })
       }
     case 'ForStatement':
-      if (statement.type === 'ForStatement' && statement.init.type === 'VariableDeclaration') {
+      if (statement.type === 'ForStatement' && statement.init && statement.init.type === 'VariableDeclaration') {
         yield* VariableDeclaration(statement.init, scope, { hoist: true })
       }
     case 'WhileStatement':
