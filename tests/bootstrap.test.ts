@@ -24,26 +24,22 @@ describe('testing src/index.ts', () => {
   })
 
   it('should support global mode', () => {
-    const interpreter = new Sval({
-      sandBox: false
-    })
+    const interpreter = new Sval()
 
     interpreter.run(`
       window.x1 = 5
       this.y1 = 6
     `)
 
-    expect((window as any).x1).toBe(5)
-    expect((window as any).y1).toBe(6)
+    expect((interpreter.window).x1).toBe(5)
+    expect((interpreter.window).y1).toBe(6)
 
-    delete (window as any).x1
-    delete (window as any).y1
+    delete (interpreter.window).x1
+    delete (interpreter.window).y1
   })
 
   it('should support sandbox mode', () => {
-    const interpreter = new Sval({
-      sandBox: true
-    })
+    const interpreter = new Sval()
 
     interpreter.run(`
       window.x2 = 5
@@ -55,7 +51,7 @@ describe('testing src/index.ts', () => {
   })
 
   it('should support ecma version 3, 5, 6, 7, 8, 9, 10', () => {
-    const versions = [3, 5, 6, 7, 8, 9, 10, 2015, 2016, 2017, 2018, 2019]
+    const versions = [3, 5, 6, 7, 8, 9, 10, 2015, 2016, 2017, 2018, 2019] as const;
     versions.forEach((v: SvalOptions['ecmaVer']) => new Sval({ ecmaVer: v }))
 
     try {

@@ -1,3 +1,5 @@
+import * as globals from 'globals';
+
 export const freeze = Object.freeze
 
 export const define = Object.defineProperty
@@ -72,17 +74,18 @@ export const assign = Object.assign ||  _assign
 
 declare let WebAssembly: any // Avoid typescript error
 let names: string[] = []
-export let globalObj = create(null)
+let globalObj = create(null)
+const allowApis = [...Object.keys(globals.builtin), ...Object.keys(globals['shared-node-browser'])]
 try {
   // Browser environment
   if (!(window as any).Object) throw 0
-  names = getOwnNames(globalObj = window).filter(n => n !== 'webkitStorageInfo')
+  names = getOwnNames(globalObj = window).filter(n => n !== 'webkitStorageInfo').filter(x => allowApis.includes(x))
 } catch (err) {
   /* istanbul ignore next */
   try {
     // Node environment
     if (!global.Object) throw 0
-    names = getOwnNames(globalObj = global).filter(n => n !== 'GLOBAL' && n !== 'root')
+    names = getOwnNames(globalObj = global).filter(n => n !== 'GLOBAL' && n !== 'root').filter(x => allowApis.includes(x))
   } catch (err) {
     // Unknow environment, simulate a global environment
     try { globalObj.Object = Object                         } catch (err) { /* empty */ }
@@ -145,20 +148,22 @@ try {
     try { globalObj.setInterval = setInterval               } catch (err) { /* empty */ }
     try { globalObj.setTimeout = setTimeout                 } catch (err) { /* empty */ }
     try { globalObj.crypto = crypto                         } catch (err) { /* empty */ }
-    names = getOwnNames(globalObj)
+    names = getOwnNames(globalObj).filter(x => allowApis.includes(x))
   }
 }
 if (globalObj.Symbol) {
   !globalObj.Symbol.iterator && (globalObj.Symbol.iterator = createSymbol('iterator'))
   !globalObj.Symbol.asyncIterator && (globalObj.Symbol.asyncIterator = createSymbol('asynciterator'))
 }
-const win = create({})
-for (let i = 0; i < names.length; i++) {
-  const name = names[i]
-  try { win[name] = globalObj[name] } catch (err) { /* empty */ }
-}
 export const WINDOW = createSymbol('window')
 export function createSandBox() {
+  const win = create({})
+  for (let i = 0; i < names.length; i++) {
+    const name = names[i]
+    try { win[name] = globalObj[name] } catch (err) { /* empty */ }
+  }  
+
+  // return assign(create({[WINDOW]: win}), win);
   return assign(create({ [WINDOW]: globalObj }), win)
 }
 

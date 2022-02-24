@@ -5,6 +5,7 @@ import { define, inherits, assign } from '../share/util'
 import { Identifier } from '../evaluate_n/identifier'
 import { BlockStatement } from './statement'
 import * as estree from 'estree'
+import * as escodegen from 'escodegen'
 import Scope from '../scope'
 import evaluate from '.'
 
@@ -230,6 +231,10 @@ export function createFunc(
   })
   define(func, 'length', {
     value: params.length,
+    configurable: true
+  })
+  define(func, 'toString', {
+    value: () => escodegen.generate(node),
     configurable: true
   })
 

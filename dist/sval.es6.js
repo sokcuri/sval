@@ -1,8 +1,8 @@
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('acorn')) :
-  typeof define === 'function' && define.amd ? define(['acorn'], factory) :
-  (global = global || self, global.Sval = factory(global.acorn));
-}(this, (function (acorn) { 'use strict';
+  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('globals'), require('acorn'), require('escodegen')) :
+  typeof define === 'function' && define.amd ? define(['globals', 'acorn', 'escodegen'], factory) :
+  (global = global || self, global.Sval = factory(global.globals, global.acorn, global.escodegen));
+}(this, (function (globals, acorn, escodegen) { 'use strict';
 
   var declaration = /*#__PURE__*/Object.freeze({
     __proto__: null,
@@ -85,16 +85,17 @@
   const assign = Object.assign || _assign;
   let names = [];
   let globalObj = create(null);
+  const allowApis = [...Object.keys(globals.builtin), ...Object.keys(globals["shared-node-browser"])];
   try {
       if (!window.Object)
           throw 0;
-      names = getOwnNames(globalObj = window).filter(n => n !== 'webkitStorageInfo');
+      names = getOwnNames(globalObj = window).filter(n => n !== 'webkitStorageInfo').filter(x => allowApis.includes(x));
   }
   catch (err) {
       try {
           if (!global.Object)
               throw 0;
-          names = getOwnNames(globalObj = global).filter(n => n !== 'GLOBAL' && n !== 'root');
+          names = getOwnNames(globalObj = global).filter(n => n !== 'GLOBAL' && n !== 'root').filter(x => allowApis.includes(x));
       }
       catch (err) {
           try {
@@ -337,23 +338,23 @@
               globalObj.crypto = crypto;
           }
           catch (err) { }
-          names = getOwnNames(globalObj);
+          names = getOwnNames(globalObj).filter(x => allowApis.includes(x));
       }
   }
   if (globalObj.Symbol) {
       !globalObj.Symbol.iterator && (globalObj.Symbol.iterator = createSymbol('iterator'));
       !globalObj.Symbol.asyncIterator && (globalObj.Symbol.asyncIterator = createSymbol('asynciterator'));
   }
-  const win = create({});
-  for (let i = 0; i < names.length; i++) {
-      const name = names[i];
-      try {
-          win[name] = globalObj[name];
-      }
-      catch (err) { }
-  }
   const WINDOW = createSymbol('window');
   function createSandBox() {
+      const win = create({});
+      for (let i = 0; i < names.length; i++) {
+          const name = names[i];
+          try {
+              win[name] = globalObj[name];
+          }
+          catch (err) { }
+      }
       return assign(create({ [WINDOW]: globalObj }), win);
   }
   function createSymbol(key) {
@@ -383,7 +384,7 @@
       }
   }
 
-  var version = "0.4.8";
+  var version = "0.5.0";
 
   const AWAIT = { RES: undefined };
   const RETURN = { RES: undefined };
@@ -2774,6 +2775,10 @@
           value: params.length,
           configurable: true
       });
+      define(func, 'toString', {
+          value: () => escodegen.generate(node),
+          configurable: true
+      });
       return func;
   }
   function* createClass(node, scope) {
@@ -2985,6 +2990,10 @@
           value: params.length,
           configurable: true
       });
+      define(func, 'toString', {
+          value: () => escodegen.generate(node),
+          configurable: true
+      });
       return func;
   }
   function createClass$1(node, scope) {
@@ -3042,22 +3051,19 @@
           this.options = {};
           this.scope = new Scope(null, true);
           this.exports = {};
-          let { ecmaVer = 9, sandBox = true } = options;
+          let { ecmaVer = 9 } = options;
           ecmaVer -= ecmaVer < 2015 ? 0 : 2009;
           if ([3, 5, 6, 7, 8, 9, 10].indexOf(ecmaVer) === -1) {
               throw new Error(`unsupported ecmaVer`);
           }
           this.options.ecmaVersion = ecmaVer;
-          if (sandBox) {
-              const win = createSandBox();
-              this.scope.let('window', win);
-              this.scope.let('this', win);
-          }
-          else {
-              this.scope.let('window', globalObj);
-              this.scope.let('this', globalObj);
-          }
+          const win = createSandBox();
+          this.scope.let('window', win);
+          this.scope.let('this', win);
           this.scope.const('exports', this.exports = {});
+      }
+      get window() {
+          return this.scope.global().find('window').get();
       }
       import(nameOrModules, mod) {
           if (typeof nameOrModules === 'string') {
