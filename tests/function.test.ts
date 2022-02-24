@@ -307,14 +307,14 @@ describe('testing src/index.ts', () => {
     expect(error).toBeInstanceOf(TypeError)
   })
 
-  it('should support toStringTag', () => {
+  it('should support function toString', () => {
     const interpreter = new Sval()
 
     interpreter.run(`
       function asdf() {return 'function';}
       exports.res = asdf.toString();
     `)
-    expect(interpreter.exports.res).toBe(`function asdf() {\n    return 'function';\n}`)
+    expect(interpreter.exports.res).toBe(`function asdf(){return'function'}`)
   })
 
 })

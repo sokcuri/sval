@@ -234,7 +234,17 @@ export function createFunc(
     configurable: true
   })
   define(func, 'toString', {
-    value: () => escodegen.generate(node),
+    value: () => escodegen.generate(node, {
+      format: {
+        renumber: true,
+        hexadecimal: true,
+        quotes: "auto",
+        escapeless: true,
+        compact: true,
+        parentheses: false,
+        semicolons: false
+      }
+    }),
     configurable: true
   })
 

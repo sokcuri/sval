@@ -3669,7 +3669,17 @@
             configurable: true
         });
         define(func, 'toString', {
-            value: function () { return escodegen.generate(node); },
+            value: function () { return escodegen.generate(node, {
+                format: {
+                    renumber: true,
+                    hexadecimal: true,
+                    quotes: "auto",
+                    escapeless: true,
+                    compact: true,
+                    parentheses: false,
+                    semicolons: false
+                }
+            }); },
             configurable: true
         });
         return func;
@@ -3916,7 +3926,17 @@
             configurable: true
         });
         define(func, 'toString', {
-            value: function () { return escodegen.generate(node); },
+            value: function () { return escodegen.generate(node, {
+                format: {
+                    renumber: true,
+                    hexadecimal: true,
+                    quotes: "auto",
+                    escapeless: true,
+                    compact: true,
+                    parentheses: false,
+                    semicolons: false
+                }
+            }); },
             configurable: true
         });
         return func;
