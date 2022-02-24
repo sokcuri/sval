@@ -26,16 +26,21 @@ export function getProto(obj: any) {
 const getOwnPropertyDescriptor = Object.getOwnPropertyDescriptor
 function getGetterOrSetter(method: 'get' | 'set', obj: any, key: string) {
   while (obj) {
-    const descriptor = getOwnPropertyDescriptor(obj, key)
-    const value = typeof descriptor !== 'undefined'
-      && typeof descriptor.writable === 'undefined'
-      && typeof descriptor[method] === 'function'
-      && descriptor[method]
-    if (value) {
-      return value
-    } else {
+    try {
+      const descriptor = getOwnPropertyDescriptor(obj, key)
+      const value = typeof descriptor !== 'undefined'
+        && typeof descriptor.writable === 'undefined'
+        && typeof descriptor[method] === 'function'
+        && descriptor[method]
+      if (value) {
+        return value
+      } else {
+        obj = getProto(obj)
+      }
+    } catch (e) {
       obj = getProto(obj)
     }
+  }
   }
 }
 export function getGetter(obj: any, key: string) {
